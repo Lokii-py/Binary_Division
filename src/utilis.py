@@ -22,9 +22,21 @@ def addBinary(BinNum1, BinNum2):
     
     return BinarySum
 
-
-def FindTwosComplement():
-    return -1
+def FindTwosComplement(BinNum):
+    """
+    Takes the Binary number and convert it into 2S complement
+    """
+    one_s_comp = ""
+    for i in BinNum:
+        if i == "1":
+            i = "0"
+            one_s_comp += i
+        else:
+            i = "1"
+            one_s_comp += i
+    TwoS_com = addBinary(one_s_comp, "1")
+    print(TwoS_com)
+    return one_s_comp
 
 def subtractBinary():
     return -1 
