@@ -9,7 +9,7 @@ def addBinary(BinNum1, BinNum2):
     4. Trim any overflow bit if the result exceeds the original input length.
     5. return the final binary sum.
     """
-    #sum the binary num after converting the string into decimal 
+    #sum the binary num after converting the string into decimal
     BinarySum = bin(int(BinNum1, 2) + int(BinNum2, 2))
     
     #trim the extra 0b

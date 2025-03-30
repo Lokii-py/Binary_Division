@@ -1,6 +1,9 @@
 import utils
 from utils import checkOverflow, shiftLeft, subtractBinary, restore, sequenceCounter, addBinary
 
+import utils
+from utils import checkOverflow, shiftLeft, subtractBinary, restore, sequenceCounter, addBinary
+
 class Restoring:
     def __init__(self, dividend, divisor):
         """
@@ -13,7 +16,7 @@ class Restoring:
         self.dividend = "0" + dividend  # Add a leading zero for proper two's complement handling
         self.divisor = "0" + divisor  # Add a leading zero for proper two's complement handling
         self.quotient = dividend  # Initialize quotient with the dividend
-        self.accum = "0" * len(self.dividend)  # Initialize the accumulator with zeros
+        self.accum = "0" * len(self.divisor)  # Initialize the accumulator with zeros
         self.iteration_count = 0  # Count the number of iterations
         self.operation_count = 0  # Count the number of binary operations (additions/subtractions)
 
@@ -34,6 +37,10 @@ class Restoring:
 
         print("Running the Restoring Division Method...")
 
+        # Special case: if the dividend's length is twice the divisor's length minus 1
+        if len(self.dividend) - 1 == 2 * (len(self.divisor) - 1):
+            self.accum = "0"
+
         sequence_counter = True
         while sequence_counter:
             # Update the number of iterations
@@ -42,37 +49,36 @@ class Restoring:
             # Perform shift operation (shift left the combined accumulator and quotient)
             combined = self.accum + self.quotient
             shifted = shiftLeft(combined)
-
             operation1 = shifted  # Store the shifted value for the restore operation
 
-            # Extract the part of the shifted number that should be subtracted from the divisor
-            self.Remainder = shifted[:(len(self.quotient) + 1)]  # Add 1 to quotient length
+            # Extract the remainder portion for subtraction
+            self.Remainder = shifted[:len(self.divisor)]
 
-            # Perform subtraction with the divisor
+            # Perform subtraction
             subtracted = subtractBinary(self.Remainder, self.divisor)
-            self.operation_count += 1  # Increment the operation count for the subtraction
+            self.operation_count += 1  # Increment the subtraction count
 
-            # Prepare for the restore operation (if needed)
+            # Prepare for potential restore operation
             operation2 = subtracted + operation1[len(subtracted):]
 
-            # Check the most significant bit (MSB) of the result after subtraction
+            # Check the most significant bit (MSB) to determine restoration
             if int(subtracted[0]) == 1:
-                # If MSB is 1, restore the original value (as the result was negative)
+                # Restore if subtraction resulted in a negative value (MSB = 1)
                 operation1 = restore(operation1)
-                # Update the quotient and accumulator after the restore
-                self.quotient = operation1[len(self.dividend):]
+                self.quotient = operation1[len(self.divisor):]
                 self.accum = operation1[:-len(self.quotient)]
             else:
-                # If MSB is 0, update the quotient and accumulator without restoring
+                # No restore needed, update values and set quotient bit to 1
                 operation2 += "1"
-                self.quotient = operation2[len(self.dividend):]
+                self.quotient = operation2[len(self.divisor):]
                 self.accum = operation2[:-len(self.quotient)]
 
-            # Update the remainder (excluding the sign bit)
-            self.rem = self.accum[1:]
-
-            # Continue the loop until the maximum number of iterations is reached
+            # Continue until the sequence counter indicates completion
             sequence_counter = sequenceCounter((len(self.divisor) - 1), self.iteration_count)
+
+        # Extract and print the final remainder (ignoring the sign bit)
+        self.rem = self.accum[1:]
+        print(self.rem)
 
     def displayResult(self):
         """
@@ -82,13 +88,7 @@ class Restoring:
         print("Remainder: ", self.rem)
         print("Number of Subtraction performed: ", self.operation_count)
 
-#debug
-c1 = Restoring("1111", "0011")
-c1.run()
-c1.displayResult()
-
 
 class NonRestoring:
     def __init__(self, dividend, divisor):
         return -1
-    
