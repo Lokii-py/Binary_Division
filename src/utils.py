@@ -87,7 +87,7 @@ def sequenceCounter(num1, num2):
     Returns:
     - bool: True if iterations should continue, False if the limit is reached.
     """
-    if num1 == num2:
+    if num1 == num2 or num1 < num2:
         return False
     return True
 
