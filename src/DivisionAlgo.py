@@ -132,14 +132,22 @@ class NonRestoring:
             #check the most significant bit (MSB) to determiine restoration
             while int(iteration1[0]) == 1:
                 iteration1 += "0"
-                shifted = shiftLeft(iteration1)
-                new_iteration = addBinary(shifted[:len(self.divisor)], self.divisor )
-                iteration1 = new_iteration + shifted[len(new_iteration):]
-                self.operation_count += 1
                 self.iteration_count += 1
+                if self.iteration_count > (len(self.divisor) -1):
+                    print("Exceeded maximum iterations.")
+                    new_iteration = addBinary(iteration1[:len(self.divisor)], self.divisor )
+                    self.operation_count += 1
+                    iteration1 = new_iteration + iteration1[len(new_iteration):]
+                    print(iteration1)
+                    break
+                else:
+                    shifted = shiftLeft(iteration1)
+                    new_iteration = addBinary(shifted[:len(self.divisor)], self.divisor )
+                    iteration1 = new_iteration + shifted[len(new_iteration):]
+                    self.operation_count += 1
 
-            #if int(iteration1[0]) == 0:
-            iteration1 += "1"
+            if int(iteration1[0]) == 0 and (self.iteration_count <= (len(self.divisor) -1)):
+                iteration1 += "1"
 
             
             self.quotient = iteration1[len(self.divisor):]
@@ -147,6 +155,8 @@ class NonRestoring:
 
             # Continue until the sequence counter indicates completion
             sequence_counter = sequenceCounter((len(self.divisor) - 1), self.iteration_count)
+            if self.iteration_count > (len(self.divisor) -1):
+                sequence_counter = False
 
         # Extract and print the final remainder (ignoring the sign bit)
         self.rem = self.accum[1:]
@@ -160,6 +170,7 @@ class NonRestoring:
         print("Number of Subtraction/Addition performed: ", self.operation_count)
         print(self.iteration_count)
 
-c1 = NonRestoring("10100011", "1011")
+#debuggging example
+c1 = Restoring("1101111100", "11101")
 c1.run()
 c1.displayResult()
