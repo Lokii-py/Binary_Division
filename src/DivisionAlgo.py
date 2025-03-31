@@ -1,9 +1,6 @@
 import utils
 from utils import checkOverflow, shiftLeft, subtractBinary, restore, sequenceCounter, addBinary
 
-import utils
-from utils import checkOverflow, shiftLeft, subtractBinary, restore, sequenceCounter, addBinary
-
 class Restoring:
     def __init__(self, dividend, divisor):
         """
@@ -78,7 +75,6 @@ class Restoring:
 
         # Extract and print the final remainder (ignoring the sign bit)
         self.rem = self.accum[1:]
-        print(self.rem)
 
     def displayResult(self):
         """
@@ -91,4 +87,79 @@ class Restoring:
 
 class NonRestoring:
     def __init__(self, dividend, divisor):
-        return -1
+        self.dividend = "0" + dividend  # Add a leading zero for proper two's complement handling
+        self.divisor = "0" + divisor  # Add a leading zero for proper two's complement handling
+        self.quotient = dividend  # Initialize quotient with the dividend
+        self.accum = "0" * len(self.divisor)  # Initialize the accumulator with zeros
+        self.iteration_count = 0  # Count the number of iterations
+        self.operation_count = 0  # Count the number of binary operations (additions/subtractions)
+    
+    def run(self):
+        # Perform the overflow check
+        print("Checking overflow...")
+        if not checkOverflow(self.dividend, self.divisor):
+            print("Overflow detected. Cannot proceed.")
+            return
+        else:
+            print("No overflow detected.")
+
+        print("Running the Restoring Division Method...")
+
+        # Special case: if the dividend's length is twice the divisor's length minus 1
+        if len(self.dividend) - 1 == 2 * (len(self.divisor) - 1):
+            self.accum = "0"
+
+        sequence_counter = True
+        while sequence_counter:
+            #update the number of iterations
+            self.iteration_count += 1
+
+            # Perform shift operation (shift left the combined accumulator and quotient)
+            combined = self.accum + self.quotient
+
+            shifted = shiftLeft(combined)
+
+            # Extract the remainder portion for subtraction
+            self.Remainder = shifted[:len(self.divisor)]
+
+            #Perform subtraction
+            new_iteration = subtractBinary(self.Remainder, self.divisor)
+
+            self.operation_count += 1
+
+            iteration1 = new_iteration + shifted[len(new_iteration):] #operation 2
+
+            #check the most significant bit (MSB) to determiine restoration
+            while int(iteration1[0]) == 1:
+                iteration1 += "0"
+                shifted = shiftLeft(iteration1)
+                new_iteration = addBinary(shifted[:len(self.divisor)], self.divisor )
+                iteration1 = new_iteration + shifted[len(new_iteration):]
+                self.operation_count += 1
+                self.iteration_count += 1
+
+            #if int(iteration1[0]) == 0:
+            iteration1 += "1"
+
+            
+            self.quotient = iteration1[len(self.divisor):]
+            self.accum = iteration1[:-len(self.quotient)]
+
+            # Continue until the sequence counter indicates completion
+            sequence_counter = sequenceCounter((len(self.divisor) - 1), self.iteration_count)
+
+        # Extract and print the final remainder (ignoring the sign bit)
+        self.rem = self.accum[1:]
+
+    def displayResult(self):
+        """
+        Displays the quotient and remainder of the division in binary format.
+        """
+        print("Quotient: ", self.quotient)
+        print("Remainder: ", self.rem)
+        print("Number of Subtraction/Addition performed: ", self.operation_count)
+        print(self.iteration_count)
+
+c1 = NonRestoring("10100011", "1011")
+c1.run()
+c1.displayResult()
