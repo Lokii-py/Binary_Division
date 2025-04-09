@@ -124,3 +124,22 @@ def checkOverflow(BinNum1, BinNum2):
         return True
     else:
         return False
+    
+def Hexadecimal(BinNum):
+    """
+    converts a binary number to hexadecimal.
+    
+    steps: 
+    1. convert it to decimal using int() function
+    2. convert the decimal number to hex using hex() function
+    4. return the final hex number
+    """
+
+    HexNum = hex(int(BinNum, 2))
+    HexNum = HexNum[2:].upper()
+    return "0x" + HexNum 
+
+
+# Test case
+Hexadecimal = Hexadecimal("101010")
+print(Hexadecimal)
