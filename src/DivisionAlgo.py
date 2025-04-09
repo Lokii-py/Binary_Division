@@ -10,6 +10,8 @@ class Restoring:
         dividend (str): The binary dividend for the division.
         divisor (str): The binary divisor for the division.
         """
+        divisor = divisor[1:] #Remove the sign bit
+        dividend = dividend[1:] #Remove the sign bit
         self.dividend = "0" + dividend  # Add a leading zero for proper two's complement handling
         self.divisor = "0" + divisor  # Add a leading zero for proper two's complement handling
         self.quotient = dividend  # Initialize quotient with the dividend
@@ -26,7 +28,7 @@ class Restoring:
         """
         # Perform the overflow check
         print("Checking overflow...")
-        if not checkOverflow(self.dividend, self.divisor):
+        if checkOverflow(self.dividend, self.divisor):
             print("Overflow detected. Cannot proceed.")
             return
         else:
@@ -97,6 +99,8 @@ class NonRestoring:
         The method adds a leading zero to both the dividend and divisor for proper two's complement handling.
         Initializes the quotient, accumulator, iteration count, and operation count.
         """
+        divisor = divisor[1:] #Remove the sign bit
+        dividend = dividend[1:] #Remove the sign bit
         self.dividend = "0" + dividend  # Add a leading zero for proper two's complement handling
         self.divisor = "0" + divisor  # Add a leading zero for proper two's complement handling
         self.quotient = dividend  # Initialize quotient with the dividend
@@ -114,7 +118,7 @@ class NonRestoring:
         """
         # Perform the overflow check
         print("Checking overflow...")
-        if not checkOverflow(self.dividend, self.divisor):
+        if checkOverflow(self.dividend, self.divisor):
             print("Overflow detected. Cannot proceed.")
             return
         else:
@@ -188,8 +192,8 @@ class NonRestoring:
         print("Quotient: ", self.quotient)
         print("Remainder: ", self.rem)
         print("Number of Subtraction/Addition performed: ", self.operation_count)
-        print(self.iteration_count)
+        print("Number of iteration: ", self.iteration_count)
 
-c1 = Restoring("10100011", "1011")
-c1.run()
-c1.displayResult()
+c2 = NonRestoring("111011100", "11110")
+c2.run()
+c2.displayResult() 
