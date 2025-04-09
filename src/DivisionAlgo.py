@@ -10,10 +10,12 @@ class Restoring:
         dividend (str): The binary dividend for the division.
         divisor (str): The binary divisor for the division.
         """
+        self.signDividend = dividend[0]
+        self.signDivisor = divisor[0]
         divisor = divisor[1:] #Remove the sign bit
-        dividend = dividend[1:] #Remove the sign bit
-        self.dividend = "0" + dividend  # Add a leading zero for proper two's complement handling
-        self.divisor = "0" + divisor  # Add a leading zero for proper two's complement handling
+        dividend = dividend[1:]
+        self.dividend = "0" + dividend  # Add a leading zero as an extended bit
+        self.divisor = "0" + divisor
         self.quotient = dividend  # Initialize quotient with the dividend
         self.accum = "0" * len(self.divisor)  # Initialize the accumulator with zeros
         self.iteration_count = 0  # Count the number of iterations
@@ -42,49 +44,66 @@ class Restoring:
 
         sequence_counter = True
         while sequence_counter:
-            # Update the number of iterations
-            self.iteration_count += 1
+            self.iteration_count += 1 # Update the number of iterations
 
-            # Perform shift operation (shift left the combined accumulator and quotient)
-            combined = self.accum + self.quotient
+            combined = self.accum + self.quotient # Perform shift operation (shift left the combined accumulator and quotient)
             shifted = shiftLeft(combined)
             operation1 = shifted  # Store the shifted value for the restore operation
 
-            # Extract the remainder portion for subtraction
-            self.Remainder = shifted[:len(self.divisor)]
+            self.Remainder = shifted[:len(self.divisor)] # Extract the remainder portion for subtraction
 
-            # Perform subtraction
-            subtracted = subtractBinary(self.Remainder, self.divisor)
+            subtracted = subtractBinary(self.Remainder, self.divisor) # Perform subtraction
             self.operation_count += 1  # Increment the subtraction count
 
-            # Prepare for potential restore operation
-            operation2 = subtracted + operation1[len(subtracted):]
+            operation2 = subtracted + operation1[len(subtracted):] # Prepare for potential restore operation
 
             # Check the most significant bit (MSB) to determine restoration
             if int(subtracted[0]) == 1:
-                # Restore if subtraction resulted in a negative value (MSB = 1)
-                operation1 = restore(operation1)
+                operation1 = restore(operation1) # Restore if subtraction resulted in a negative value (MSB = 1)
                 self.quotient = operation1[len(self.divisor):]
                 self.accum = operation1[:-len(self.quotient)]
             else:
-                # No restore needed, update values and set quotient bit to 1
-                operation2 += "1"
+                operation2 += "1" # No restore needed, update values and set quotient bit to 1
                 self.quotient = operation2[len(self.divisor):]
                 self.accum = operation2[:-len(self.quotient)]
 
-            # Continue until the sequence counter indicates completion
-            sequence_counter = sequenceCounter((len(self.divisor) - 1), self.iteration_count)
+            sequence_counter = sequenceCounter((len(self.divisor) - 1), self.iteration_count) # Continue until the sequence counter indicates completion
 
-        # Extract and print the final remainder (ignoring the sign bit)
-        self.rem = self.accum[1:]
+        self.rem = self.accum[1:] # Extract and print the final remainder (ignoring the sign bit)
+
+    def determineSigns(self):
+        """
+        Determines the final outputs after performing divison on the magnitude of the sign numbers
+        Logical Operaton XOR will be performed between Numbers.
+        Sign of quotient is XOR of the signs of dividend and divisor
+        Sign of reaminder is same as the sign of dividend
+
+        The method calculates:
+        - The quotient of the division.
+        - The remainder of the division.
+        """
+        self.signQuotient = int(self.signDividend) ^ int(self.signDivisor)
+        self.signRemainder = self.signDividend
 
     def displayResult(self):
         """
         Displays the quotient and remainder of the division in binary format.
+        
+        The method prints:
+        - The quotient of the division.
+        - The remainder of the division (ignoring the sign bit).
+        - The total number of subtraction and addition operations performed.
+        - The total number of iterations executed during the division.
         """
-        print("Quotient: ", self.quotient)
-        print("Remainder: ", self.rem)
-        print("Number of Subtraction performed: ", self.operation_count)
+        '''signQuotient = int(self.signDividend) ^ int(self.signDivisor)
+        signRemainder = self.signDividend'''
+        self.run()
+        self.determineSigns()
+        if not checkOverflow(self.dividend, self.divisor):
+            print("Quotient: ", str(self.signQuotient) + self.quotient)
+            print("Remainder: ", self.signRemainder + self.rem)
+            print("Number of Subtraction/Addition performed: ", self.operation_count)
+            print("Number of iteration: ", self.iteration_count, "\n")
 
 
 class NonRestoring:
@@ -99,6 +118,8 @@ class NonRestoring:
         The method adds a leading zero to both the dividend and divisor for proper two's complement handling.
         Initializes the quotient, accumulator, iteration count, and operation count.
         """
+        self.signDividend = dividend[0]
+        self.signDivisor = divisor[0]
         divisor = divisor[1:] #Remove the sign bit
         dividend = dividend[1:] #Remove the sign bit
         self.dividend = "0" + dividend  # Add a leading zero for proper two's complement handling
@@ -132,24 +153,19 @@ class NonRestoring:
 
         sequence_counter = True
         while sequence_counter:
-            # Update the number of iterations
-            self.iteration_count += 1
+            self.iteration_count += 1  # Update the number of iterations
 
-            # Perform shift operation (shift left the combined accumulator and quotient)
             combined = self.accum + self.quotient
-            shifted = shiftLeft(combined)
+            shifted = shiftLeft(combined) # Perform shift operation
 
-            # Extract the remainder portion for subtraction
-            self.Remainder = shifted[:len(self.divisor)]
+            self.Remainder = shifted[:len(self.divisor)] # Extract the remainder portion for subtraction
 
-            # Perform subtraction
-            new_iteration = subtractBinary(self.Remainder, self.divisor)
+            new_iteration = subtractBinary(self.Remainder, self.divisor) # Perform subtraction
             self.operation_count += 1
 
             iteration1 = new_iteration + shifted[len(new_iteration):]  # Operation 2
 
-            # Check the most significant bit (MSB) to determine if restoration is needed
-            while int(iteration1[0]) == 1:
+            while int(iteration1[0]) == 1: # Check the most significant bit (MSB) to determine if restoration is needed
                 iteration1 += "0"  # Add zeros to iteration1
                 self.iteration_count += 1
                 if self.iteration_count > (len(self.divisor) - 1):
@@ -165,19 +181,30 @@ class NonRestoring:
                     iteration1 = new_iteration + shifted[len(new_iteration):]
                     self.operation_count += 1
 
-            # If MSB is 0 and iteration count is within the limit
-            if int(iteration1[0]) == 0 and (self.iteration_count <= (len(self.divisor) - 1)):
+            if int(iteration1[0]) == 0 and (self.iteration_count <= (len(self.divisor) - 1)): # If MSB is 0 and iteration count is within the limit
                 iteration1 += "1"  # Update the iteration with '1'
 
-            # Update quotient and accumulator
-            self.quotient = iteration1[len(self.divisor):]
+            self.quotient = iteration1[len(self.divisor):] # Update quotient and accumulator
             self.accum = iteration1[:-len(self.quotient)]
 
-            # Continue until the sequence counter indicates completion
-            sequence_counter = sequenceCounter((len(self.divisor) - 1), self.iteration_count)
+            sequence_counter = sequenceCounter((len(self.divisor) - 1), self.iteration_count) # Continue until the sequence counter indicates completion
 
-        # Extract and print the final remainder (ignoring the sign bit)
-        self.rem = self.accum[1:]
+        self.rem = self.accum[1:] # Extract and print the final remainder (ignoring the sign bit)
+
+
+    def determineSigns(self):
+        """
+        Determines the final outputs after performing divison on the magnitude of the sign numbers
+        Logical Operaton XOR will be performed between Numbers.
+        Sign of quotient is XOR of the signs of dividend and divisor
+        Sign of reaminder is same as the sign of dividend
+
+        The method calculates:
+        - The quotient of the division.
+        - The remainder of the division.
+        """
+        self.signQuotient = int(self.signDividend) ^ int(self.signDivisor)
+        self.signRemainder = self.signDividend
 
     def displayResult(self):
         """
@@ -189,11 +216,12 @@ class NonRestoring:
         - The total number of subtraction and addition operations performed.
         - The total number of iterations executed during the division.
         """
-        print("Quotient: ", self.quotient)
-        print("Remainder: ", self.rem)
-        print("Number of Subtraction/Addition performed: ", self.operation_count)
-        print("Number of iteration: ", self.iteration_count)
-
-c2 = NonRestoring("111011100", "11110")
-c2.run()
-c2.displayResult() 
+        '''signQuotient = int(self.signDividend) ^ int(self.signDivisor)
+        signRemainder = self.signDividend'''
+        self.run()
+        self.determineSigns()
+        if not checkOverflow(self.dividend, self.divisor):
+            print("Quotient: ", str(self.signQuotient) + self.quotient)
+            print("Remainder: ", self.signRemainder + self.rem)
+            print("Number of Subtraction/Addition performed: ", self.operation_count)
+            print("Number of iteration: ", self.iteration_count, "\n")
