@@ -111,8 +111,8 @@ def checkOverflow(BinNum1, BinNum2):
     2. Find the two's complement of BinNum2 using the FindTwosCom function.
     3. Perform binary addition using the addBinary function.
     4. Check the most significant bit (leftmost bit) of the result. 
-       - If it is '1', overflow has occurred (indicating a negative result in two's complement).
-       - Otherwise, no overflow.
+        - If it is '1', overflow has occurred (indicating a negative result in two's complement).
+        - Otherwise, no overflow.
     """
 
     num1 = BinNum1[:-(len(BinNum2)-1)]
@@ -121,9 +121,9 @@ def checkOverflow(BinNum1, BinNum2):
     output = addBinary(num1, num2)
 
     if output[0] == "1":
-        return True
-    else:
         return False
+    else:
+        return True
     
 def Hexadecimal(BinNum):
     """
@@ -138,8 +138,3 @@ def Hexadecimal(BinNum):
     HexNum = hex(int(BinNum, 2))
     HexNum = HexNum[2:].upper()
     return "0x" + HexNum 
-
-
-# Test case
-Hexadecimal = Hexadecimal("101010")
-print(Hexadecimal)
