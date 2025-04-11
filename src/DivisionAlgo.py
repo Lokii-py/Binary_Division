@@ -1,6 +1,6 @@
 from utils import checkOverflow, shiftLeft, subtractBinary, restore, sequenceCounter, addBinary, Hexadecimal
 
-class Restoring:
+class Division:
     def __init__(self, dividend, divisor):
         """
         Initializes the Restoring Division instance with the given binary dividend and divisor.
@@ -19,6 +19,39 @@ class Restoring:
         self.accum = "0" * len(self.divisor)  # Initialize the accumulator with zeros
         self.iteration_count = 0  # Count the number of iterations
         self.operation_count = 0  # Count the number of binary operations (additions/subtractions)
+
+    def determineSigns(self):
+        """
+        Determines the final outputs after performing divison on the magnitude of the sign numbers
+        Logical Operaton XOR will be performed between Numbers.
+        Sign of quotient is XOR of the signs of dividend and divisor
+        Sign of reaminder is same as the sign of dividend
+        """
+        self.signQuotient = int(self.signDividend) ^ int(self.signDivisor)
+        self.signRemainder = self.signDividend
+
+    def displayResult(self):
+        """
+        Displays the quotient and remainder of the division in binary format.
+        
+        The method prints:
+        - The quotient of the division.
+        - The remainder of the division (ignoring the sign bit).
+        - The total number of subtraction and addition operations performed.
+        - The total number of iterations executed during the division.
+        """
+        if not checkOverflow(self.dividend, self.divisor):
+            self.quotient = str(self.signQuotient) + self.quotient
+            self.rem = self.signRemainder + self.rem
+
+            print("Quotient:",self.quotient, "| In Hexadecimal:",Hexadecimal(self.quotient))
+            print("Remainder:",self.rem, "| In Hexadecimal:",Hexadecimal(self.rem))
+            print("Number of Subtraction/Addition performed: ", self.operation_count)
+            print("Number of iteration: ", self.iteration_count, "\n")
+
+class Restoring(Division):
+    def __init__(self, dividend, divisor):
+        super().__init__(dividend, divisor)
 
     def run(self):
         """
@@ -73,67 +106,14 @@ class Restoring:
 
         self.rem = self.accum[1:] #Extract and print the final remainder
 
-    def determineSigns(self):
-        """
-        Determines the final outputs after performing divison on the magnitude of the sign numbers
-        Logical Operaton XOR will be performed between Numbers.
-        Sign of quotient is XOR of the signs of dividend and divisor
-        Sign of reaminder is same as the sign of dividend
-
-        The method calculates:
-        - The quotient of the division.
-        - The remainder of the division.
-        """
-        self.signQuotient = int(self.signDividend) ^ int(self.signDivisor)
-        self.signRemainder = self.signDividend
-
     def displayResult(self):
-        """
-        Displays the quotient and remainder of the division in binary format.
-        
-        The method prints:
-        - The quotient of the division.
-        - The remainder of the division (ignoring the sign bit).
-        - The total number of subtraction and addition operations performed.
-        - The total number of iterations executed during the division.
-        """
-        '''signQuotient = int(self.signDividend) ^ int(self.signDivisor)
-        signRemainder = self.signDividend'''
         self.run()
-        self.determineSigns()
+        super().determineSigns()
+        super().displayResult()
 
-        if not checkOverflow(self.dividend, self.divisor):
-            self.quotient = str(self.signQuotient) + self.quotient
-            self.rem = self.signRemainder + self.rem
-
-            print("Quotient:",self.quotient, "| In Hexadecimal:",Hexadecimal(self.quotient))
-            print("Remainder:",self.rem, "| In Hexadecimal:",Hexadecimal(self.rem))
-            print("Number of Subtraction/Addition performed: ", self.operation_count)
-            print("Number of iteration: ", self.iteration_count, "\n")
-
-
-class NonRestoring:
+class NonRestoring(Division):
     def __init__(self, dividend, divisor):
-        """
-        Initializes the NonRestoring Division instance with the given binary dividend and divisor.
-        
-        Arguments:
-        dividend (str): The binary dividend for the division.
-        divisor (str): The binary divisor for the division.
-        
-        The method adds a leading zero to both the dividend and divisor for proper two's complement handling.
-        Initializes the quotient, accumulator, iteration count, and operation count.
-        """
-        self.signDividend = dividend[0]
-        self.signDivisor = divisor[0]
-        divisor = divisor[1:] #Remove the sign bit
-        dividend = dividend[1:] #Remove the sign bit
-        self.dividend = "0" + dividend  # Add a leading zero for proper two's complement handling
-        self.divisor = "0" + divisor  # Add a leading zero for proper two's complement handling
-        self.quotient = dividend  # Initialize quotient with the dividend
-        self.accum = "0" * len(self.divisor)  # Initialize the accumulator with zeros
-        self.iteration_count = 0  # Count the number of iterations
-        self.operation_count = 0  # Count the number of binary operations (additions/subtractions)
+        super().__init__(dividend, divisor)
     
     def run(self):
         """
@@ -200,41 +180,7 @@ class NonRestoring:
 
         self.rem = self.accum[1:] # Extract and print the final remainder (ignoring the sign bit)
 
-
-    def determineSigns(self):
-        """
-        Determines the final outputs after performing divison on the magnitude of the sign numbers
-        Logical Operaton XOR will be performed between Numbers.
-        Sign of quotient is XOR of the signs of dividend and divisor
-        Sign of reaminder is same as the sign of dividend
-
-        The method calculates:
-        - The quotient of the division.
-        - The remainder of the division.
-        """
-        self.signQuotient = int(self.signDividend) ^ int(self.signDivisor)
-        self.signRemainder = self.signDividend
-
     def displayResult(self):
-        """
-        Displays the quotient and remainder of the division in binary format.
-        
-        The method prints:
-        - The quotient of the division.
-        - The remainder of the division (ignoring the sign bit).
-        - The total number of subtraction and addition operations performed.
-        - The total number of iterations executed during the division.
-        """
-        '''signQuotient = int(self.signDividend) ^ int(self.signDivisor)
-        signRemainder = self.signDividend'''
         self.run()
-        self.determineSigns()
-
-        if not checkOverflow(self.dividend, self.divisor):
-            self.quotient = str(self.signQuotient) + self.quotient
-            self.rem = self.signRemainder + self.rem
-
-            print("Quotient:",self.quotient, "| In Hexadecimal:",Hexadecimal(self.quotient))
-            print("Remainder:",self.rem, "| In Hexadecimal:",Hexadecimal(self.rem))
-            print("Number of Subtraction/Addition performed: ", self.operation_count)
-            print("Number of iteration: ", self.iteration_count, "\n")
+        super().determineSigns()
+        super().displayResult()
