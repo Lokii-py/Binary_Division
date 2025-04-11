@@ -1,3 +1,4 @@
+import time
 from utils import checkOverflow, shiftLeft, subtractBinary, restore, sequenceCounter, addBinary, Hexadecimal
 
 class Division:
@@ -47,7 +48,8 @@ class Division:
             print("Quotient:",self.quotient, "| In Hexadecimal:",Hexadecimal(self.quotient))
             print("Remainder:",self.rem, "| In Hexadecimal:",Hexadecimal(self.rem))
             print("Number of Subtraction/Addition performed: ", self.operation_count)
-            print("Number of iteration: ", self.iteration_count, "\n")
+            print("Number of iteration: ", self.iteration_count)
+            print("Execution Time: {:.6f} seconds\n".format(self.end_time - self.start_time))
 
 class Restoring(Division):
     def __init__(self, dividend, divisor):
@@ -61,7 +63,8 @@ class Restoring(Division):
         restoration if needed, until the division is complete.
         """
         # Perform the overflow check
-        print("Checking overflow...")
+        self.start_time = time.time()
+        print("\nChecking overflow...")
         if checkOverflow(self.dividend, self.divisor):
             print("Overflow Status: Overflow detected. Divison cannot be proceed.\n")
             return
@@ -102,6 +105,7 @@ class Restoring(Division):
             sequence_counter = sequenceCounter((len(self.divisor) - 1), self.iteration_count) #Continue until the sequence counter indicates completion
 
         self.rem = self.accum[1:] #Extract and print the final remainder
+        self.end_time = time.time()
 
     def displayResult(self):
         self.run()
@@ -121,6 +125,7 @@ class NonRestoring(Division):
         The loop continues until the division is complete or the maximum number of iterations is reached.
         """
         # Perform the overflow check
+        self.start_time = time.time()
         print("Checking overflow...")
         if checkOverflow(self.dividend, self.divisor):
             print("Overflow Status: Overflow detected. Divison cannot be proceed.\n")
@@ -171,6 +176,7 @@ class NonRestoring(Division):
             sequence_counter = sequenceCounter((len(self.divisor) - 1), self.iteration_count) # Continue until the sequence counter indicates completion
 
         self.rem = self.accum[1:] # Extract and print the final remainder (ignoring the sign bit)
+        self.end_time = time.time()
 
     def displayResult(self):
         self.run()
