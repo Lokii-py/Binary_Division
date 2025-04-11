@@ -74,27 +74,24 @@ class Restoring(Division):
         if len(self.dividend) - 1 == 2 * (len(self.divisor) - 1):
             self.accum = "0"
 
-        divide_count = 0
         sequence_counter = True
         while sequence_counter:
 
             combined = self.accum + self.quotient # Perform shift operation (shift left the combined accumulator and quotient)
             shifted = shiftLeft(combined)
+            self.iteration_count += 1 #increment number of iterations
             operation1 = shifted    #Store the shifted value for potential restoration
 
             self.Remainder = shifted[:len(self.divisor)] #Extract the remainder portion for subtraction
 
             subtracted = subtractBinary(self.Remainder, self.divisor)
             self.operation_count += 1  #Increment the subtraction count
-            divide_count += 1
-            self.iteration_count += 1 #increment number of iterations
 
             operation2 = subtracted + operation1[len(subtracted):]
 
             #Check the most significant bit (MSB) to determine restoration
             if int(subtracted[0]) == 1:
                 operation1 = restore(operation1) #Restore if subtraction resulted in a negative value (MSB = 1)
-                self.iteration_count += 1 #increment number of iterations
                 self.quotient = operation1[len(self.divisor):]
                 self.accum = operation1[:-len(self.quotient)]
             else:
@@ -102,7 +99,7 @@ class Restoring(Division):
                 self.quotient = operation2[len(self.divisor):]
                 self.accum = operation2[:-len(self.quotient)]
 
-            sequence_counter = sequenceCounter((len(self.divisor) - 1), divide_count) #Continue until the sequence counter indicates completion
+            sequence_counter = sequenceCounter((len(self.divisor) - 1), self.iteration_count) #Continue until the sequence counter indicates completion
 
         self.rem = self.accum[1:] #Extract and print the final remainder
 
@@ -137,46 +134,41 @@ class NonRestoring(Division):
         if len(self.dividend) - 1 == 2 * (len(self.divisor) - 1):
             self.accum = "0"
 
-        divide_count = 0
         sequence_counter = True
         while sequence_counter:
 
             combined = self.accum + self.quotient
-            shifted = shiftLeft(combined) 
+            shifted = shiftLeft(combined)
+            self.iteration_count += 1  # Update the number of iterations
 
             self.Remainder = shifted[:len(self.divisor)] # Extract the remainder portion for subtraction
 
             new_iteration = subtractBinary(self.Remainder, self.divisor)
             self.operation_count += 1
-            self.iteration_count += 1  # Update the number of iterations
-            divide_count += 1
 
             iteration1 = new_iteration + shifted[len(new_iteration):]  # Operation 2
 
             while int(iteration1[0]) == 1: # Check the most significant bit (MSB) to determine if restoration is needed
                 iteration1 += "0"  # Add zeros to iteration1
-                self.iteration_count += 1
-                if self.iteration_count > (len(self.divisor) - 1):
-                    print("Exceeded maximum iterations.")
+                if self.iteration_count == (len(self.divisor) - 1):
                     new_iteration = addBinary(iteration1[:len(self.divisor)], self.divisor)
-                    divide_count += 1
                     self.operation_count += 1
                     iteration1 = new_iteration + iteration1[len(new_iteration):]
                     break
                 else:
                     shifted = shiftLeft(iteration1)
+                    self.iteration_count += 1
                     new_iteration = addBinary(shifted[:len(self.divisor)], self.divisor)
-                    iteration1 = new_iteration + shifted[len(new_iteration):]
-                    divide_count += 1
                     self.operation_count += 1
+                    iteration1 = new_iteration + shifted[len(new_iteration):]
 
-            if int(iteration1[0]) == 0 and (self.iteration_count <= (len(self.divisor) - 1)): # If MSB is 0 and iteration count is within the limit
+            if int(iteration1[0]) == 0 and self.operation_count <= (len(self.divisor) - 1): # If MSB is 0 and iteration count is within the limit
                 iteration1 += "1" # Update the iteration with '1'
 
             self.quotient = iteration1[len(self.divisor):] # Update quotient and accumulator
             self.accum = iteration1[:-len(self.quotient)]
 
-            sequence_counter = sequenceCounter((len(self.divisor) - 1), divide_count) # Continue until the sequence counter indicates completion
+            sequence_counter = sequenceCounter((len(self.divisor) - 1), self.iteration_count) # Continue until the sequence counter indicates completion
 
         self.rem = self.accum[1:] # Extract and print the final remainder (ignoring the sign bit)
 
