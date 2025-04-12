@@ -9,18 +9,13 @@ def addBinary(BinNum1, BinNum2):
     4. Trim any overflow bit if the result exceeds the original input length.
     5. return the final binary sum.
     """
-    #sum the binary num after converting the string into decimal
     BinarySum = bin(int(BinNum1, 2) + int(BinNum2, 2))
     
-    #trim the extra 0b
     BinarySum = BinarySum[2:]
 
-
-    #find the maximum length from two binary number
     max_len = max(len(BinNum1), len(BinNum2))
     
-    #Discard the overflow bit if the BinarySum has one
-    if len(BinarySum) > max_len:
+    if len(BinarySum) > max_len: 
         x = len(BinarySum) - max_len
         return BinarySum[x:]
     
@@ -38,7 +33,6 @@ def FindTwosCom(BinNum):
     """
     one_s_comp = ""
 
-    #Create 1S complement of the given Binary Digit
     for i in BinNum:
         if i == "1":
             i = "0"
@@ -47,7 +41,6 @@ def FindTwosCom(BinNum):
             i = "1"
             one_s_comp += i
     
-    #Convert the 1S complement to 2S complement adding 1
     TwoS_com = addBinary(one_s_comp, "1")
 
     return TwoS_com
@@ -114,7 +107,6 @@ def checkOverflow(BinNum1, BinNum2):
         - If it is '1', overflow has occurred (indicating a negative result in two's complement).
         - Otherwise, no overflow.
     """
-
     num1 = BinNum1[:-(len(BinNum2)-1)]
     num2 = FindTwosCom(BinNum2)
 

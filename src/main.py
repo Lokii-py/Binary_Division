@@ -1,10 +1,10 @@
 from DivisionAlgo import Restoring, NonRestoring
-from utils import Hexadecimal
 
 def main():
     """
-    This is the main function of the program. It takes user input for two binary signed numbers.
-    This program run for the signed binary numbers only
+    This is the main function of the program. It allows the user to perform binary division
+    on signed binary numbers using both the Restoring and Non-Restoring algorithms.
+    The program runs only for signed binary numbers and can give wrong results for unsigned numbers.
     """
     print("\nWelcome to the Binary Divison Program for the Signed number\n")
 
@@ -24,7 +24,7 @@ def main():
             continue
         else:
             try:
-                dividend = input("\nPlease enter the signed Binary Number as dividend: ").strip() #Take input from user
+                dividend = input("\nPlease enter the signed Binary Number as dividend: ").strip()
                 divisor = input("Enter the signed Binary Number as divisor: ").strip()
 
                 D1 = Restoring(str(dividend), str(divisor))
