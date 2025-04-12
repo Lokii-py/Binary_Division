@@ -23,10 +23,10 @@ class Division:
 
     def determineSigns(self):
         """
-        Determines the final outputs after performing divison on the magnitude of the sign numbers
-        Logical Operaton XOR will be performed between Numbers.
+        Determines the final outputs after performing division on the magnitude of the sign numbers
+        Logical operator XOR will be performed between Numbers.
         Sign of quotient is XOR of the signs of dividend and divisor
-        Sign of reaminder is same as the sign of dividend
+        Sign of remainder is same as the sign of dividend
         """
         self.signQuotient = int(self.signDividend) ^ int(self.signDivisor)
         self.signRemainder = self.signDividend
@@ -66,7 +66,7 @@ class Restoring(Division):
         self.start_time = time.time()
         print("\nChecking overflow...")
         if checkOverflow(self.dividend, self.divisor):
-            print("Overflow Status: Overflow detected. Divison cannot be proceed.\n")
+            print("Overflow Status: Overflow detected. Division cannot be proceed.\n")
             return
         else:
             print("Overflow Status: No overflow detected.")
@@ -95,6 +95,7 @@ class Restoring(Division):
             #Check the most significant bit (MSB) to determine restoration
             if int(subtracted[0]) == 1:
                 operation1 = restore(operation1) #Restore if subtraction resulted in a negative value (MSB = 1)
+                self.operation_count += 1
                 self.quotient = operation1[len(self.divisor):]
                 self.accum = operation1[:-len(self.quotient)]
             else:
